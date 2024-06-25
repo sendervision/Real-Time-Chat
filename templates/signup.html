@@ -6,8 +6,11 @@
 {% endblock %}
 
 {% block body %}
-<form method="post">
+<form method="post" action="{{ url_for('signup')}}">
     <p>Créer un compte</p>
+    {% if error %}
+        <p class="text-error-credential">{{error}}</p>
+    {% endif %}
     <div class="container-input-form">
         <input type="text" name="fullname" id="fullname" placeholder="Votre nom & prenom">
         <label for="fullname">Nom & Prénom</label>

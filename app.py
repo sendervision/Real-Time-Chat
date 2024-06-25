@@ -1,61 +1,51 @@
-from functools import wraps
-from flask import Flask, render_template, redirect, request, url_for, session
-from flask_socketio import SocketIO
+import os
+from dotenv import load_dotenv
+from flask import Flask, render_template, session
+from flask_socketio import SocketIO, emit, send
+
+from controllers.auth import _login, _logout, _signup
+from database import USERS
+from utils import verify_login
+
+load_dotenv()
+MESSAGES = []
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret_key'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY_APP')
 socketio = SocketIO(app)
 
-users = {
-    "john": {"password": "hello"},
-    "susan": {"password": "bye"}
-}
-
-def verify_password(username, password):
-    return username in users and users[username]["password"] == password
-
-def checkConnectionUser(func):
-    @wraps(func)
-    def check(*args, **kwargs):
-        return render_template("index.html") if 'username' in session else func(*args, **kwargs)
-    return check
-
 @app.route("/")
-@checkConnectionUser
+@verify_login
 def main():
-    return redirect(url_for('login'))
+    user = {"username": session.get("username")}
+    users = USERS.keys()
+    messages = [
+        # {"user": "John", "message": "Bonjour à tous"},
+        # {"user": "Jane", "message": "Comment ça va?"}
+    ]
+    return render_template("index.html", user=user, users=users, messages=MESSAGES)
+    
 
-@app.route("/signup")
-@checkConnectionUser
+@app.route("/signup", methods=["GET","POST"])
 def signup():
-    return render_template("signup.html")
+    return _signup()
 
 @app.route("/login", methods=["GET", "POST"])
-@checkConnectionUser
 def login():
-    if request.method == "POST" and request.form:
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if verify_password(username, password):
-            session['username'] = username
-            return redirect(url_for('main'))
-        else:
-            return render_template('login.html', error="Identifiant invalide")
-    return render_template("login.html")
+    return _login()
 
 @app.route('/logout')
 def logout():
-    session.pop("username", None)
-    return redirect(url_for('login'))
+    return _logout()
 
 @socketio.on('connect')
 def connection(user):
-    print(user)
     print("un nouveau utilisateur vient d'arriver")
 
-@socketio.on('event')
-def handle_message(json):
-    print('received message: ', json)
+@socketio.on('send-msg')
+def handle_message(msg):
+    emit('recv-msg', msg)
+    print('received message: ', msg)
 
 if __name__ == '__main__':
     socketio.run(app)
