@@ -19,10 +19,6 @@ socketio = SocketIO(app)
 def main():
     user = {"username": session.get("username")}
     users = USERS.keys()
-    messages = [
-        # {"user": "John", "message": "Bonjour à tous"},
-        # {"user": "Jane", "message": "Comment ça va?"}
-    ]
     return render_template("index.html", user=user, users=users, messages=MESSAGES)
     
 
@@ -42,10 +38,13 @@ def logout():
 def connection(user):
     print("un nouveau utilisateur vient d'arriver")
 
+@socketio.on('disconnect')
+def disconnect():
+    print("Un utilisateur vient de partir")
+
 @socketio.on('send-msg')
 def handle_message(msg):
-    emit('recv-msg', msg)
-    print('received message: ', msg)
+    emit('recv-msg', msg, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app)

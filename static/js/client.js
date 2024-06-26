@@ -1,38 +1,27 @@
-const socketio = io()
+const socket = io()
 
-const username = document.getElementById("appbar-username")
-const btn_send = document.getElementById("btn-send")
-const input_message = document.getElementById("input-message")
-const template_message = document.getElementById("tmp-message")
-const container_messages = document.querySelector(".messages")
+const input_message = document.getElementById("input")
+const btn_send = document.querySelector(".button-send")
+const ul_messages = document.getElementById("messages")
+const username = document.getElementById("text-username")
 
-const USER = username.textContent
-const MESSAGES = []
 
-function addMessage(message){
-  const layout_message = template_message.content.cloneNode(true)
-  const user = layout_message.getElementById("user")
-  const msg = layout_message.getElementById("message")
-  user.textContent = message.user
-  msg.textContent = message.message
-  container_messages.append(layout_message)
+function addMessage(msg){
+  const container_messages = document.querySelector(".container-message").content.cloneNode(true)
+  const p_username = container_messages.getElementById("username")
+  const p_message =container_messages.getElementById("message")
+  p_username.textContent = msg.username
+  p_message.textContent = msg.message
+  ul_messages.appendChild(container_messages)
 }
 
-socketio.on('connect', () => {
-  socketio.emit('event', {message: `${USER} vient de rejoindre le chat`})
-})
-
-btn_send.addEventListener('click', (e) =>{
+btn_send.addEventListener('click', (e) => {
+  e.preventDefault()
   const msg = input_message.value
   input_message.value = ""
-  if (msg){
-    const message = {"user": USER, "message": msg }
-    addMessage(message)
-    socketio.emit("send-msg", message)
-  }
+  socket.emit("send-msg", {"message": msg, "username": username.textContent })
 })
 
-socketio.on('recv-msg', (msg) => {
+socket.on("recv-msg", (msg) => {
   addMessage(msg)
 })
-

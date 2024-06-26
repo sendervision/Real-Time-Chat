@@ -1,47 +1,21 @@
-{% extends 'layout.html' %}
+{% extends 'layout.html'%}
+{% block title %} Home page{% endblock %}
 {% block head %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/client.js')}}" type="module"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <script src="{{url_for('static', filename='js/client.js')}}" type="module"></script>
+  <link rel="stylesheet" href="{{url_for('static', filename='css/home.css')}}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block body %}
-<div class="appbar">
-    {% if user.username %}
-    <div></div>
-    <p id="appbar-username">{{user.username}}</p>
-    <p id="btn-logout"><a href="{{url_for('logout')}}">Se deconecter</a></p>
-    {% endif %}
-</div>
-<div class="container-chat">
-    <!-- <div class="list-user">
-        <p>En ligne</p>
-        {% if users%}
-            <ol>
-                {% for user in users %}
-                    <li>{{user}}</li>
-                {% endfor %}
-            </ol>
-            {% else %}
-            <p>Pas d'autre personnes en ligne</p>
-        {% endif %}
-    </div> -->
-    <div class="separator-chat"></div>
-    <div class="list-messages">
-        <div class="messages">
-            
-        </div>
-        <div class="container-btn-input-message">
-            <input name="input-message" id="input-message" type="text" placeholder="Message...">
-            <button id="btn-send">Envoyer</button>
-        </div>
-    </div>
-    <template id="tmp-message">
-        <div class="layout-message">
-            <p id="user"></p>
-            <p id="message"></p>
-        </div>
-    </template>
-</div>
-
+  <p id="text-username">{{user.username}}</p>
+  <ul id="messages"></ul>
+  <form id="form" action="#">
+    <input id="input" autocomplete="off" /><button class="button-send">Send</button>
+  </form>
+  <template class="container-message">
+    <li>
+      <p id="username"></p>
+      <p id="message"></p>
+    </li>
+  </template>
 {% endblock %}
