@@ -45,16 +45,31 @@ body {
     color: #fff;
 }
 
-#messages {
+/* #messages {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    background: #090022;
 }
+
+#username{
+    color: white;
+    font-family: sans-serif;
+} */
 
 #messages>li {
     padding: 0.5rem 1rem;
 }
 
-#messages>li:nth-child(odd) {
-    background: #efefef;
+/* #message{
+    background: #f0eff3;
+    color: black;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+} */
+
+#messages>p:nth-child(odd) {
+    background: #f0eff3;
+    color: black;
+    
 }

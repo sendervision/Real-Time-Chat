@@ -1,11 +1,9 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, send
+from faker import Faker
 
-from controllers.auth import _login, _logout, _signup
-from database import USERS
-from utils import verify_login
 
 load_dotenv()
 MESSAGES = []
@@ -14,25 +12,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY_APP')
 socketio = SocketIO(app)
 
-@app.route("/")
-@verify_login
+@app.route("/", methods=["GET", "POST"])
 def main():
-    user = {"username": session.get("username")}
-    users = USERS.keys()
-    return render_template("index.html", user=user, users=users, messages=MESSAGES)
-    
-
-@app.route("/signup", methods=["GET","POST"])
-def signup():
-    return _signup()
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    return _login()
-
-@app.route('/logout')
-def logout():
-    return _logout()
+    name = Faker().name()
+    user = {"username": name}
+    return render_template("index.html", user=user, messages=MESSAGES)
 
 @socketio.on('connect')
 def connection(user):
